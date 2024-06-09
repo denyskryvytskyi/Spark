@@ -3,6 +3,7 @@
 #include "SparkCharacter.h"
 
 #include "Camera/CameraComponent.h"
+#include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
@@ -27,6 +28,9 @@ ASparkCharacter::ASparkCharacter()
     // workaround to rotate character toward the direction of acceleration (movement input)
     bUseControllerRotationYaw = false;
     GetCharacterMovement()->bOrientRotationToMovement = true;
+
+    OverheadWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("Overhead Widget"));
+    OverheadWidget->SetupAttachment(RootComponent);
 }
 
 void ASparkCharacter::BeginPlay()

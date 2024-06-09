@@ -48,4 +48,8 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
     class UInputAction* ShootAction { nullptr };
+
+    /** HUD */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+    class UWidgetComponent* OverheadWidget;
 };
