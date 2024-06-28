@@ -2,6 +2,8 @@
 
 #include "SparkCharacter.h"
 
+#include "Spark/Weapon/Weapon.h"
+
 #include "Camera/CameraComponent.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -9,6 +11,8 @@
 
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+
+#include "Net/UnrealNetwork.h"
 
 constexpr float kTargetSpringArmLength = 600.0f;
 
@@ -83,6 +87,22 @@ void ASparkCharacter::ShootFromInput(const FInputActionValue& Value)
     // shooting...
 }
 
+void ASparkCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
+{
+    if (OverlappingWeapon) {
+        OverlappingWeapon->ShowPickupWidget(true);
+    } else {
+        LastWeapon->ShowPickupWidget(false);
+    }
+}
+
+void ASparkCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    DOREPLIFETIME_CONDITION(ASparkCharacter, OverlappingWeapon, COND_OwnerOnly);
+}
+
 void ASparkCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
@@ -99,5 +119,17 @@ void ASparkCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
         EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ASparkCharacter::Move);
         EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASparkCharacter::Look);
         EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Triggered, this, &ASparkCharacter::ShootFromInput);
+    }
+}
+
+void ASparkCharacter::SetOverlappingWeapon(AWeapon* Weapon)
+{
+    if (Weapon == nullptr && OverlappingWeapon) {
+        OverlappingWeapon->ShowPickupWidget(false);
+    }
+    OverlappingWeapon = Weapon;
+
+    if (IsLocallyControlled() && OverlappingWeapon) {
+        OverlappingWeapon->ShowPickupWidget(true);
     }
 }

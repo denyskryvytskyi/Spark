@@ -16,8 +16,11 @@ class SPARK_API ASparkCharacter : public ACharacter {
 public:
     ASparkCharacter();
 
+    virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
     virtual void Tick(float DeltaTime) override;
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+    void SetOverlappingWeapon(class AWeapon* Weapon);
 
 protected:
     virtual void BeginPlay() override;
@@ -25,6 +28,10 @@ protected:
     void Move(const FInputActionValue& Value);
     void Look(const FInputActionValue& Value);
     void ShootFromInput(const FInputActionValue& Value);
+
+private:
+    UFUNCTION()
+    void OnRep_OverlappingWeapon(AWeapon* LastWeapon);
 
 public:
     UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -52,4 +59,8 @@ public:
     /** HUD */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
     class UWidgetComponent* OverheadWidget;
+
+    /** Pickups */
+    UPROPERTY(ReplicatedUsing = OnRep_OverlappingWeapon)
+    AWeapon* OverlappingWeapon;
 };
