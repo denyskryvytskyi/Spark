@@ -17,9 +17,6 @@ public:
     virtual void PostLogin(APlayerController* NewPlayer) override;
 
 private:
-    void StartTravel();
-
-private:
     UPROPERTY(EditAnywhere, category = Settings)
     int32 MinPlayerAmountToStart { 2 };
 };
