@@ -32,4 +32,6 @@ void USparkAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
     bIsInAir = SparkCharacter->GetCharacterMovement()->IsFalling();
 
     bIsAccelerating = SparkCharacter->GetCharacterMovement()->GetCurrentAcceleration().Size() > 0.0f;
+
+    bIsWeaponEquipped = SparkCharacter->IsWeaponEquipped();
 }

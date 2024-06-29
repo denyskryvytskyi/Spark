@@ -6,6 +6,8 @@
 #include "Components/WidgetComponent.h"
 #include "Spark/Character/SparkCharacter.h"
 
+#include "Net/UnrealNetwork.h"
+
 AWeapon::AWeapon()
 {
     PrimaryActorTick.bCanEverTick = false;
@@ -57,14 +59,43 @@ void AWeapon::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActo
     }
 }
 
+void AWeapon::OnRep_WeaponState()
+{
+    switch (WeaponState) {
+    case EWeaponState::EWS_Equipped:
+        ShowPickupWidget(false);
+        AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        break;
+    }
+}
+
 void AWeapon::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
+}
+
+void AWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    DOREPLIFETIME(AWeapon, WeaponState);
 }
 
 void AWeapon::ShowPickupWidget(bool bIsVisible)
 {
     if (PickupWidget) {
         PickupWidget->SetVisibility(bIsVisible);
+    }
+}
+
+void AWeapon::SetWeaponState(const EWeaponState State)
+{
+    WeaponState = State;
+
+    switch (WeaponState) {
+    case EWeaponState::EWS_Equipped:
+        ShowPickupWidget(false);
+        AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        break;
     }
 }

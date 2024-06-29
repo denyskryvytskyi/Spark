@@ -2,6 +2,7 @@
 
 #include "SparkCharacter.h"
 
+#include "Spark/Components/CombatComponent.h"
 #include "Spark/Weapon/Weapon.h"
 
 #include "Camera/CameraComponent.h"
@@ -35,6 +36,9 @@ ASparkCharacter::ASparkCharacter()
 
     OverheadWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("Overhead Widget"));
     OverheadWidget->SetupAttachment(RootComponent);
+
+    Combat = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
+    Combat->SetIsReplicated(true);
 }
 
 void ASparkCharacter::BeginPlay()
@@ -87,12 +91,30 @@ void ASparkCharacter::ShootFromInput(const FInputActionValue& Value)
     // shooting...
 }
 
+void ASparkCharacter::OnEquipPressed(const FInputActionValue& Value)
+{
+    if (Combat) {
+        if (HasAuthority()) {
+            Combat->EquipWeapon(OverlappingWeapon);
+        } else {
+            ServerOnEquipPressed();
+        }
+    }
+}
+
 void ASparkCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 {
     if (OverlappingWeapon) {
         OverlappingWeapon->ShowPickupWidget(true);
     } else {
         LastWeapon->ShowPickupWidget(false);
+    }
+}
+
+void ASparkCharacter::ServerOnEquipPressed_Implementation()
+{
+    if (Combat) {
+        Combat->EquipWeapon(OverlappingWeapon);
     }
 }
 
@@ -119,6 +141,16 @@ void ASparkCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
         EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ASparkCharacter::Move);
         EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASparkCharacter::Look);
         EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Triggered, this, &ASparkCharacter::ShootFromInput);
+        EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Triggered, this, &ASparkCharacter::OnEquipPressed);
+    }
+}
+
+void ASparkCharacter::PostInitializeComponents()
+{
+    Super::PostInitializeComponents();
+
+    if (Combat) {
+        Combat->Character = this;
     }
 }
 
@@ -132,4 +164,9 @@ void ASparkCharacter::SetOverlappingWeapon(AWeapon* Weapon)
     if (IsLocallyControlled() && OverlappingWeapon) {
         OverlappingWeapon->ShowPickupWidget(true);
     }
+}
+
+bool ASparkCharacter::IsWeaponEquipped() const
+{
+    return Combat && Combat->EquippedWeapon;
 }
