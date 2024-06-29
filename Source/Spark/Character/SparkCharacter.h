@@ -31,6 +31,7 @@ protected:
     void Look(const FInputActionValue& Value);
     void ShootFromInput(const FInputActionValue& Value);
     void OnEquipPressed(const FInputActionValue& Value);
+    void OnCrouchPressed(const FInputActionValue& Value);
 
 private:
     UFUNCTION()
@@ -55,6 +56,9 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
     class UInputAction* MoveAction { nullptr };
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+    class UInputAction* CrouchAction { nullptr };
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
     class UInputAction* LookAction { nullptr };

@@ -102,6 +102,29 @@ void ASparkCharacter::OnEquipPressed(const FInputActionValue& Value)
     }
 }
 
+void ASparkCharacter::OnCrouchPressed(const FInputActionValue& Value)
+{
+    if (bIsCrouched) {
+        if (GEngine) {
+            GEngine->AddOnScreenDebugMessage(
+                -1,
+                15.f,
+                FColor::Red,
+                FString(TEXT("Uncrouch")));
+        }
+        UnCrouch();
+    } else {
+        if (GEngine) {
+            GEngine->AddOnScreenDebugMessage(
+                -1,
+                15.f,
+                FColor::Red,
+                FString(TEXT("Crouch")));
+        }
+        Crouch();
+    }
+}
+
 void ASparkCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 {
     if (OverlappingWeapon) {
@@ -139,6 +162,7 @@ void ASparkCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
         EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
         EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ASparkCharacter::Move);
+        EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Triggered, this, &ASparkCharacter::OnCrouchPressed);
         EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASparkCharacter::Look);
         EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Triggered, this, &ASparkCharacter::ShootFromInput);
         EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Triggered, this, &ASparkCharacter::OnEquipPressed);
