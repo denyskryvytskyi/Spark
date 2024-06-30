@@ -105,24 +105,17 @@ void ASparkCharacter::OnEquipPressed(const FInputActionValue& Value)
 void ASparkCharacter::OnCrouchPressed(const FInputActionValue& Value)
 {
     if (bIsCrouched) {
-        if (GEngine) {
-            GEngine->AddOnScreenDebugMessage(
-                -1,
-                15.f,
-                FColor::Red,
-                FString(TEXT("Uncrouch")));
-        }
         UnCrouch();
     } else {
-        if (GEngine) {
-            GEngine->AddOnScreenDebugMessage(
-                -1,
-                15.f,
-                FColor::Red,
-                FString(TEXT("Crouch")));
-        }
         Crouch();
     }
+}
+
+void ASparkCharacter::OnAimTriggered(const FInputActionValue& Value)
+{
+    const bool isPressed = Value.Get<bool>();
+
+    Combat->SetAiming(isPressed);
 }
 
 void ASparkCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
@@ -166,6 +159,7 @@ void ASparkCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
         EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASparkCharacter::Look);
         EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Triggered, this, &ASparkCharacter::ShootFromInput);
         EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Triggered, this, &ASparkCharacter::OnEquipPressed);
+        EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Triggered, this, &ASparkCharacter::OnAimTriggered);
     }
 }
 
@@ -193,4 +187,9 @@ void ASparkCharacter::SetOverlappingWeapon(AWeapon* Weapon)
 bool ASparkCharacter::IsWeaponEquipped() const
 {
     return Combat && Combat->EquippedWeapon;
+}
+
+bool ASparkCharacter::IsAiming() const
+{
+    return Combat && Combat->bIsAiming;
 }

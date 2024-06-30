@@ -24,9 +24,20 @@ public:
 protected:
     virtual void BeginPlay() override;
 
+    void SetAiming(bool bAiming);
+
+    UFUNCTION(Server, Reliable)
+    void ServerSetAiming(bool bAiming);
+
+    UFUNCTION()
+    void OnRep_EquippedWeapon();
+
 private:
     class ASparkCharacter* Character { nullptr };
 
-    UPROPERTY(Replicated)
+    UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
     AWeapon* EquippedWeapon { nullptr };
+
+    UPROPERTY(Replicated)
+    bool bIsAiming { false };
 };

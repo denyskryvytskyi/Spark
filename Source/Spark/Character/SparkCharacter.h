@@ -23,6 +23,7 @@ public:
 
     void SetOverlappingWeapon(class AWeapon* Weapon);
     bool IsWeaponEquipped() const;
+    bool IsAiming() const;
 
 protected:
     virtual void BeginPlay() override;
@@ -32,6 +33,7 @@ protected:
     void ShootFromInput(const FInputActionValue& Value);
     void OnEquipPressed(const FInputActionValue& Value);
     void OnCrouchPressed(const FInputActionValue& Value);
+    void OnAimTriggered(const FInputActionValue& Value);
 
 private:
     UFUNCTION()
@@ -68,6 +70,9 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
     class UInputAction* EquipAction { nullptr };
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+    class UInputAction* AimAction { nullptr };
 
     /** HUD */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))

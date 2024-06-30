@@ -26,14 +26,26 @@ private:
     float Speed { 0.0f };
 
     UPROPERTY(BlueprintReadOnly, category = Movement, meta = (AllowPrivateAccess = "true"))
+    float YawOffset { 0.0f };
+    UPROPERTY(BlueprintReadOnly, category = Movement, meta = (AllowPrivateAccess = "true"))
+    float Lean { 0.0f };
+
+    UPROPERTY(BlueprintReadOnly, category = Movement, meta = (AllowPrivateAccess = "true"))
     bool bIsInAir { false };
 
     UPROPERTY(BlueprintReadOnly, category = Movement, meta = (AllowPrivateAccess = "true"))
     bool bIsAccelerating { false };
-    
+
     UPROPERTY(BlueprintReadOnly, category = Movement, meta = (AllowPrivateAccess = "true"))
     bool bIsCrouched { false };
 
     UPROPERTY(BlueprintReadOnly, category = Combat, meta = (AllowPrivateAccess = "true"))
     bool bIsWeaponEquipped { false };
+
+    UPROPERTY(BlueprintReadOnly, category = Combat, meta = (AllowPrivateAccess = "true"))
+    bool bIsAiming { false };
+
+    FRotator CharacterRotation;
+    FRotator CharacterRotationLastFrame;
+    FRotator DeltaRotation;
 };
