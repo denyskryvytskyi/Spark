@@ -29,8 +29,11 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
     }
     EquippedWeapon->SetOwner(Character);
 
-    Character->GetCharacterMovement()->bOrientRotationToMovement = false;
     Character->bUseControllerRotationYaw = true;
+    if (auto* CharacterMovement = Character->GetCharacterMovement()) {
+        CharacterMovement->bOrientRotationToMovement = false;
+        CharacterMovement->MaxWalkSpeed = BaseMaxWalkSpeed;
+    }
 }
 
 void UCombatComponent::BeginPlay()
@@ -42,6 +45,9 @@ void UCombatComponent::SetAiming(bool bAiming)
 {
     bIsAiming = bAiming;
     ServerSetAiming(bAiming);
+    if (Character) {
+        Character->GetCharacterMovement()->MaxWalkSpeed = bIsAiming ? AimingMaxWalkSpeed : BaseMaxWalkSpeed;
+    }
 }
 
 void UCombatComponent::OnRep_EquippedWeapon()
@@ -55,6 +61,9 @@ void UCombatComponent::OnRep_EquippedWeapon()
 void UCombatComponent::ServerSetAiming_Implementation(bool bAiming)
 {
     bIsAiming = bAiming;
+    if (Character) {
+        Character->GetCharacterMovement()->MaxWalkSpeed = bIsAiming ? AimingMaxWalkSpeed : BaseMaxWalkSpeed;
+    }
 }
 
 void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
