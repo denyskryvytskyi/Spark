@@ -31,6 +31,12 @@ private:
     float Lean { 0.0f };
 
     UPROPERTY(BlueprintReadOnly, category = Movement, meta = (AllowPrivateAccess = "true"))
+    float AO_Yaw { 0.0f };
+
+    UPROPERTY(BlueprintReadOnly, category = Movement, meta = (AllowPrivateAccess = "true"))
+    float AO_Pitch { 0.0f };
+
+    UPROPERTY(BlueprintReadOnly, category = Movement, meta = (AllowPrivateAccess = "true"))
     bool bIsInAir { false };
 
     UPROPERTY(BlueprintReadOnly, category = Movement, meta = (AllowPrivateAccess = "true"))

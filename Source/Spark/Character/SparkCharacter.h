@@ -25,6 +25,9 @@ public:
     bool IsWeaponEquipped() const;
     bool IsAiming() const;
 
+    FORCEINLINE float GetAOYaw() const { return AO_Yaw; }
+    FORCEINLINE float GetAOPitch() const { return AO_Pitch; }
+
 protected:
     virtual void BeginPlay() override;
 
@@ -34,6 +37,8 @@ protected:
     void OnEquipPressed(const FInputActionValue& Value);
     void OnCrouchPressed(const FInputActionValue& Value);
     void OnAimTriggered(const FInputActionValue& Value);
+
+    void AimOffset(float DeltaTime);
 
 private:
     UFUNCTION()
@@ -85,4 +90,9 @@ public:
     /** Components*/
     UPROPERTY(VisibleAnywhere)
     class UCombatComponent* Combat { nullptr };
+
+private:
+    float AO_Yaw { 0.0f };
+    float AO_Pitch { 0.0f };
+    FRotator StartingAimRotation;
 };

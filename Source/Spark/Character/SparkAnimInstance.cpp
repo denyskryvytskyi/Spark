@@ -55,4 +55,7 @@ void USparkAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
     const float Target = Delta.Yaw / DeltaSeconds;
     const float Interp = FMath::FInterpTo(Lean, Target, DeltaSeconds, 6.0f);
     Lean = FMath::Clamp(Interp, -180.0f, 180.0f);
+
+    AO_Yaw = SparkCharacter->GetAOYaw();
+    AO_Pitch = SparkCharacter->GetAOPitch();
 }

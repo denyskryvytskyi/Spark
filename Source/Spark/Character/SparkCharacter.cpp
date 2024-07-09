@@ -16,6 +16,9 @@
 
 #include "Net/UnrealNetwork.h"
 
+#include "Kismet/KismetMathLibrary.h"
+#include "Math/UnrealMathUtility.h"
+
 constexpr float kTargetSpringArmLength = 600.0f;
 
 ASparkCharacter::ASparkCharacter()
@@ -122,6 +125,33 @@ void ASparkCharacter::OnAimTriggered(const FInputActionValue& Value)
     Combat->SetAiming(isPressed);
 }
 
+void ASparkCharacter::AimOffset(float DeltaTime)
+{
+    FVector Velocity = GetVelocity();
+    Velocity.Z = 0.0f;
+
+    const bool IsStanding = FMath::IsNearlyZero(Velocity.Size());
+
+    if (IsStanding && !GetCharacterMovement()->IsFalling()) {
+        const FRotator CurrentAimRotation = FRotator(0.0f, GetBaseAimRotation().Yaw, 0.0f);
+        const FRotator DeltaAimRotation = UKismetMathLibrary::NormalizedDeltaRotator(CurrentAimRotation, StartingAimRotation);
+        AO_Yaw = DeltaAimRotation.Yaw;
+        bUseControllerRotationYaw = false;
+    } else {
+        StartingAimRotation = FRotator(0.0f, GetBaseAimRotation().Yaw, 0.0f);
+        AO_Yaw = 0.0f;
+        bUseControllerRotationYaw = true;
+    }
+
+    AO_Pitch = GetBaseAimRotation().GetNormalized().Pitch;
+    // if (AO_Pitch > 90.f && !IsLocallyControlled()) {
+    //     // map pitch from [270, 360) to [-90, 0)
+    //     FVector2D InRange(270.f, 360.f);
+    //     FVector2D OutRange(-90.f, 0.f);
+    //     AO_Pitch = FMath::GetMappedRangeValueClamped(InRange, OutRange, AO_Pitch);
+    // }
+}
+
 void ASparkCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 {
     if (OverlappingWeapon) {
@@ -148,6 +178,10 @@ void ASparkCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 void ASparkCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
+
+    if (Combat && Combat->EquippedWeapon) {
+        AimOffset(DeltaTime);
+    }
 }
 
 void ASparkCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
