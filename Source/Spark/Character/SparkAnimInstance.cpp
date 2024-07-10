@@ -7,6 +7,8 @@
 
 #include "Kismet/KismetMathLibrary.h"
 
+#include "Spark/Weapon/Weapon.h"
+
 void USparkAnimInstance::NativeInitializeAnimation()
 {
     Super::NativeInitializeAnimation();
@@ -58,4 +60,16 @@ void USparkAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
     AO_Yaw = SparkCharacter->GetAOYaw();
     AO_Pitch = SparkCharacter->GetAOPitch();
+
+    const AWeapon* const EquippedWeapon = SparkCharacter->GetEquippedWeapon();
+
+    if (bIsWeaponEquipped && EquippedWeapon && EquippedWeapon->GetMeshComponent() && SparkCharacter->GetMesh()) {
+        UE_LOG(LogTemp, Warning, TEXT("TEST"));
+        LeftHandTransform = EquippedWeapon->GetMeshComponent()->GetSocketTransform(FName("LeftHandSocket"), ERelativeTransformSpace::RTS_World);
+        FVector OutPosition;
+        FRotator OutRotation;
+        SparkCharacter->GetMesh()->TransformToBoneSpace(FName("hand_r"), LeftHandTransform.GetLocation(), FRotator::ZeroRotator, OutPosition, OutRotation);
+        LeftHandTransform.SetLocation(OutPosition);
+        LeftHandTransform.SetRotation(FQuat(OutRotation));
+    }
 }

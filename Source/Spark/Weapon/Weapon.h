@@ -30,6 +30,8 @@ public:
     void ShowPickupWidget(bool bIsVisible);
     void SetWeaponState(const EWeaponState State);
 
+    FORCEINLINE USkeletalMeshComponent* GetMeshComponent() const { return WeaponMesh; }
+
 protected:
     virtual void BeginPlay() override;
 

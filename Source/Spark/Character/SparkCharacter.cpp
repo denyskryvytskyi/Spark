@@ -48,6 +48,11 @@ ASparkCharacter::ASparkCharacter()
     GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 }
 
+AWeapon* ASparkCharacter::GetEquippedWeapon() const
+{
+    return Combat ? Combat->EquippedWeapon : nullptr;
+}
+
 void ASparkCharacter::BeginPlay()
 {
     Super::BeginPlay();
@@ -144,12 +149,6 @@ void ASparkCharacter::AimOffset(float DeltaTime)
     }
 
     AO_Pitch = GetBaseAimRotation().GetNormalized().Pitch;
-    // if (AO_Pitch > 90.f && !IsLocallyControlled()) {
-    //     // map pitch from [270, 360) to [-90, 0)
-    //     FVector2D InRange(270.f, 360.f);
-    //     FVector2D OutRange(-90.f, 0.f);
-    //     AO_Pitch = FMath::GetMappedRangeValueClamped(InRange, OutRange, AO_Pitch);
-    // }
 }
 
 void ASparkCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)

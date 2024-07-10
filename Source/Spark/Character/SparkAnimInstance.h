@@ -23,6 +23,9 @@ private:
     class ASparkCharacter* SparkCharacter { nullptr };
 
     UPROPERTY(BlueprintReadOnly, category = Movement, meta = (AllowPrivateAccess = "true"))
+    FTransform LeftHandTransform;
+
+    UPROPERTY(BlueprintReadOnly, category = Movement, meta = (AllowPrivateAccess = "true"))
     float Speed { 0.0f };
 
     UPROPERTY(BlueprintReadOnly, category = Movement, meta = (AllowPrivateAccess = "true"))
