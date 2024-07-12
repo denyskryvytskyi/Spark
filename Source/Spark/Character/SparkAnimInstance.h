@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "Spark/Types/TurningInPlace.h"
+
 #include "Animation/AnimInstance.h"
 #include "CoreMinimal.h"
 
@@ -38,6 +40,9 @@ private:
 
     UPROPERTY(BlueprintReadOnly, category = Movement, meta = (AllowPrivateAccess = "true"))
     float AO_Pitch { 0.0f };
+
+    UPROPERTY(BlueprintReadOnly, category = Movement, meta = (AllowPrivateAccess = "true"))
+    ETurningInPlace TurningInPlace { ETurningInPlace::NotTurning };
 
     UPROPERTY(BlueprintReadOnly, category = Movement, meta = (AllowPrivateAccess = "true"))
     bool bIsInAir { false };

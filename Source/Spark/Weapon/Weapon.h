@@ -9,11 +9,11 @@
 
 UENUM(BlueprintType)
 enum class EWeaponState : uint8 {
-    EWS_Initial UMETA(DisplayName = "Initial State"),
-    EWS_Equipped UMETA(DisplayName = "Equipped"),
-    EWS_Dropped UMETA(DisplayName = "Dropped"),
+    Initial UMETA(DisplayName = "Initial State"),
+    Equipped UMETA(DisplayName = "Equipped"),
+    Dropped UMETA(DisplayName = "Dropped"),
 
-    EWS_Max UMETA(DisplayName = "DefaultMaX")
+    Max UMETA(DisplayName = "DefaultMaX")
 };
 
 UCLASS()
@@ -59,7 +59,7 @@ private:
     class USphereComponent* AreaSphere;
 
     UPROPERTY(ReplicatedUsing = OnRep_WeaponState, VisibleAnywhere, Category = "Weapon Properties")
-    EWeaponState WeaponState { EWeaponState::EWS_Initial };
+    EWeaponState WeaponState { EWeaponState::Initial };
 
     UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
     class UWidgetComponent* PickupWidget;

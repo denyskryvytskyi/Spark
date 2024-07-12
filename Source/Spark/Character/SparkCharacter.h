@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 
+#include "Spark/Types/TurningInPlace.h"
+
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
 
@@ -27,6 +29,8 @@ public:
 
     FORCEINLINE float GetAOYaw() const { return AO_Yaw; }
     FORCEINLINE float GetAOPitch() const { return AO_Pitch; }
+    FORCEINLINE ETurningInPlace GetTurninInPlace() const { return TurningInPlace; }
+
     AWeapon* GetEquippedWeapon() const;
 
 protected:
@@ -40,6 +44,7 @@ protected:
     void OnAimTriggered(const FInputActionValue& Value);
 
     void AimOffset(float DeltaTime);
+    void TurnInPlace(float DeltaTime);
 
 private:
     UFUNCTION()
@@ -94,6 +99,8 @@ private:
 
 private:
     float AO_Yaw { 0.0f };
+    float InterpAO_Yaw { 0.0f };
     float AO_Pitch { 0.0f };
     FRotator StartingAimRotation;
+    ETurningInPlace TurningInPlace { ETurningInPlace::NotTurning };
 };

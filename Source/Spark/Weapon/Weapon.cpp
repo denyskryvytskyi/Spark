@@ -62,7 +62,7 @@ void AWeapon::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 void AWeapon::OnRep_WeaponState()
 {
     switch (WeaponState) {
-    case EWeaponState::EWS_Equipped:
+    case EWeaponState::Equipped:
         ShowPickupWidget(false);
         AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
         break;
@@ -93,7 +93,7 @@ void AWeapon::SetWeaponState(const EWeaponState State)
     WeaponState = State;
 
     switch (WeaponState) {
-    case EWeaponState::EWS_Equipped:
+    case EWeaponState::Equipped:
         ShowPickupWidget(false);
         AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
         break;

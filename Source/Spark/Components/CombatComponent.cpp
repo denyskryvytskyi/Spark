@@ -22,7 +22,7 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
     }
 
     EquippedWeapon = WeaponToEquip;
-    EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
+    EquippedWeapon->SetWeaponState(EWeaponState::Equipped);
     auto* CharacterMesh = Character->GetMesh();
     if (const USkeletalMeshSocket* HandSocket = CharacterMesh->GetSocketByName(FName("Right_Hand_Socket"))) {
         HandSocket->AttachActor(EquippedWeapon, CharacterMesh);

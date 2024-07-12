@@ -20,6 +20,8 @@
 #include "Math/UnrealMathUtility.h"
 
 constexpr float kTargetSpringArmLength = 600.0f;
+constexpr float kInterpAOYawSpeed = 4.0f;
+constexpr float kTurningYawMin = 5.0f;
 
 ASparkCharacter::ASparkCharacter()
 {
@@ -142,13 +144,38 @@ void ASparkCharacter::AimOffset(float DeltaTime)
         const FRotator DeltaAimRotation = UKismetMathLibrary::NormalizedDeltaRotator(CurrentAimRotation, StartingAimRotation);
         AO_Yaw = DeltaAimRotation.Yaw;
         bUseControllerRotationYaw = false;
+        if (TurningInPlace == ETurningInPlace::NotTurning) {
+            InterpAO_Yaw = AO_Yaw;
+        }
+        TurnInPlace(DeltaTime);
     } else {
         StartingAimRotation = FRotator(0.0f, GetBaseAimRotation().Yaw, 0.0f);
         AO_Yaw = 0.0f;
+        TurningInPlace = ETurningInPlace::NotTurning;
         bUseControllerRotationYaw = true;
     }
 
     AO_Pitch = GetBaseAimRotation().GetNormalized().Pitch;
+}
+
+void ASparkCharacter::TurnInPlace(float DeltaTime)
+{
+    if (AO_Yaw > 90.0f) {
+        TurningInPlace = ETurningInPlace::Right;
+    } else if (AO_Yaw < -90.0f) {
+        TurningInPlace = ETurningInPlace::Left;
+    }
+
+    if (TurningInPlace != ETurningInPlace::NotTurning) {
+        GetCharacterMovement()->bUseControllerDesiredRotation = true;
+        InterpAO_Yaw = FMath::FInterpTo(InterpAO_Yaw, 0.0f, DeltaTime, kInterpAOYawSpeed);
+        AO_Yaw = InterpAO_Yaw;
+        if (FMath::Abs(AO_Yaw) < kTurningYawMin) {
+            GetCharacterMovement()->bUseControllerDesiredRotation = false;
+            TurningInPlace = ETurningInPlace::NotTurning;
+            StartingAimRotation = FRotator(0.0f, GetBaseAimRotation().Yaw, 0.0f);
+        }
+    }
 }
 
 void ASparkCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
