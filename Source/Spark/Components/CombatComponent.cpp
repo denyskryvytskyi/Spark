@@ -10,6 +10,8 @@
 
 #include "GameFramework/CharacterMovementComponent.h"
 
+const FName kRightHandSocket = "Right_Hand_Socket";
+
 UCombatComponent::UCombatComponent()
 {
     PrimaryComponentTick.bCanEverTick = false;
@@ -24,7 +26,7 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
     EquippedWeapon = WeaponToEquip;
     EquippedWeapon->SetWeaponState(EWeaponState::Equipped);
     auto* CharacterMesh = Character->GetMesh();
-    if (const USkeletalMeshSocket* HandSocket = CharacterMesh->GetSocketByName(FName("Right_Hand_Socket"))) {
+    if (const USkeletalMeshSocket* HandSocket = CharacterMesh->GetSocketByName(kRightHandSocket)) {
         HandSocket->AttachActor(EquippedWeapon, CharacterMesh);
     }
     EquippedWeapon->SetOwner(Character);

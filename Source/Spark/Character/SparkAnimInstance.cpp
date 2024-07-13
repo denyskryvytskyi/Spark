@@ -9,7 +9,8 @@
 
 #include "Spark/Weapon/Weapon.h"
 
-constexpr float kLeftHandOffsetZ = 7.0f;
+const FName kLeftHandSocketName = "LeftHandSocket";
+constexpr float kLeftHandOffset = -7.0f;
 
 void USparkAnimInstance::NativeInitializeAnimation()
 {
@@ -68,13 +69,18 @@ void USparkAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
     const AWeapon* const EquippedWeapon = SparkCharacter->GetEquippedWeapon();
 
     if (bIsWeaponEquipped && EquippedWeapon && EquippedWeapon->GetMeshComponent() && SparkCharacter->GetMesh()) {
-        UE_LOG(LogTemp, Warning, TEXT("TEST"));
-        LeftHandTransform = EquippedWeapon->GetMeshComponent()->GetSocketTransform(FName("LeftHandSocket"), ERelativeTransformSpace::RTS_World);
+        LeftHandTransform = EquippedWeapon->GetMeshComponent()->GetSocketTransform(kLeftHandSocketName, ERelativeTransformSpace::RTS_World);
+
+        FVector OutPosition;
+        FRotator OutRotation;
+        SparkCharacter->GetMesh()->TransformToBoneSpace(FName("hand_r"), LeftHandTransform.GetLocation(), FRotator::ZeroRotator, OutPosition, OutRotation);
+        LeftHandTransform.SetLocation(OutPosition);
+        LeftHandTransform.SetRotation(FQuat(OutRotation));
 
         // workaround for the crouch walking animation bug (when left hand has a wrong position)
         if ((bIsCrouched && bIsAccelerating) || (bIsCrouched && TurningInPlace != ETurningInPlace::NotTurning)) {
             FVector CurrentLocation = LeftHandTransform.GetLocation();
-            CurrentLocation.Z -= kLeftHandOffsetZ;
+            CurrentLocation.Z += kLeftHandOffset;
             LeftHandTransform.SetLocation(CurrentLocation);
         }
     }
