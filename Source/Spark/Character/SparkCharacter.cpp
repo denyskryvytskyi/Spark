@@ -22,6 +22,8 @@
 constexpr float kTargetSpringArmLength = 600.0f;
 constexpr float kInterpAOYawSpeed = 4.0f;
 constexpr float kTurningYawMin = 5.0f;
+constexpr float kNetUpdateFrequency = 66.0f;
+constexpr float kMinNetUpdateFrequency = 33.0f;
 
 ASparkCharacter::ASparkCharacter()
 {
@@ -48,6 +50,9 @@ ASparkCharacter::ASparkCharacter()
 
     GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
     GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+
+    NetUpdateFrequency = kNetUpdateFrequency;
+    MinNetUpdateFrequency = kMinNetUpdateFrequency;
 }
 
 AWeapon* ASparkCharacter::GetEquippedWeapon() const
@@ -68,6 +73,16 @@ void ASparkCharacter::BeginPlay()
     // workaround to hide default wepon bone of the character skeleton
     GetMesh()->HideBoneByName(TEXT("weapon_r"), EPhysBodyOp::PBO_None);
     //
+}
+
+void ASparkCharacter::Jump()
+{
+    if (bIsCrouched) {
+        UnCrouch();
+    }
+    {
+        Super::Jump();
+    }
 }
 
 void ASparkCharacter::Move(const FInputActionValue& Value)
@@ -118,10 +133,12 @@ void ASparkCharacter::OnEquipPressed(const FInputActionValue& Value)
 
 void ASparkCharacter::OnCrouchPressed(const FInputActionValue& Value)
 {
-    if (bIsCrouched) {
-        UnCrouch();
-    } else {
-        Crouch();
+    if (!GetCharacterMovement()->IsFalling()) {
+        if (bIsCrouched) {
+            UnCrouch();
+        } else {
+            Crouch();
+        }
     }
 }
 
@@ -143,7 +160,7 @@ void ASparkCharacter::AimOffset(float DeltaTime)
         const FRotator CurrentAimRotation = FRotator(0.0f, GetBaseAimRotation().Yaw, 0.0f);
         const FRotator DeltaAimRotation = UKismetMathLibrary::NormalizedDeltaRotator(CurrentAimRotation, StartingAimRotation);
         AO_Yaw = DeltaAimRotation.Yaw;
-        bUseControllerRotationYaw = false;
+        bUseControllerRotationYaw = true;
         if (TurningInPlace == ETurningInPlace::NotTurning) {
             InterpAO_Yaw = AO_Yaw;
         }
@@ -167,11 +184,9 @@ void ASparkCharacter::TurnInPlace(float DeltaTime)
     }
 
     if (TurningInPlace != ETurningInPlace::NotTurning) {
-        GetCharacterMovement()->bUseControllerDesiredRotation = true;
         InterpAO_Yaw = FMath::FInterpTo(InterpAO_Yaw, 0.0f, DeltaTime, kInterpAOYawSpeed);
         AO_Yaw = InterpAO_Yaw;
         if (FMath::Abs(AO_Yaw) < kTurningYawMin) {
-            GetCharacterMovement()->bUseControllerDesiredRotation = false;
             TurningInPlace = ETurningInPlace::NotTurning;
             StartingAimRotation = FRotator(0.0f, GetBaseAimRotation().Yaw, 0.0f);
         }
@@ -215,7 +230,7 @@ void ASparkCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
     Super::SetupPlayerInputComponent(PlayerInputComponent);
 
     if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent)) {
-        EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
+        EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ASparkCharacter::Jump);
         EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
         EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ASparkCharacter::Move);

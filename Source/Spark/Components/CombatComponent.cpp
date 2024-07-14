@@ -45,6 +45,10 @@ void UCombatComponent::BeginPlay()
 
 void UCombatComponent::SetAiming(bool bAiming)
 {
+    if (Character == nullptr || EquippedWeapon == nullptr) {
+        return;
+    }
+
     bIsAiming = bAiming;
     ServerSetAiming(bAiming);
     if (Character) {
