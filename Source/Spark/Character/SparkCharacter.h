@@ -26,6 +26,7 @@ public:
     void SetOverlappingWeapon(class AWeapon* Weapon);
     bool IsWeaponEquipped() const;
     bool IsAiming() const;
+    void PlayFireMontage();
 
     FORCEINLINE float GetAOYaw() const { return AO_Yaw; }
     FORCEINLINE float GetAOPitch() const { return AO_Pitch; }
@@ -97,6 +98,9 @@ private:
     /** Components*/
     UPROPERTY(VisibleAnywhere)
     class UCombatComponent* Combat { nullptr };
+
+    UPROPERTY(EditAnywhere, Category = Combat)
+    class UAnimMontage* FireWeaponMontage;
 
 private:
     float AO_Yaw { 0.0f };

@@ -26,6 +26,8 @@ protected:
 
     void SetAiming(bool bAiming);
 
+    void ShootButtonPressed(bool bPressed);
+
     UFUNCTION(Server, Reliable)
     void ServerSetAiming(bool bAiming);
 

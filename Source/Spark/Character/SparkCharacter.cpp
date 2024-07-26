@@ -2,6 +2,8 @@
 
 #include "SparkCharacter.h"
 
+#include "SparkAnimInstance.h"
+
 #include "Spark/Components/CombatComponent.h"
 #include "Spark/Weapon/Weapon.h"
 
@@ -117,7 +119,10 @@ void ASparkCharacter::Look(const FInputActionValue& Value)
 
 void ASparkCharacter::ShootFromInput(const FInputActionValue& Value)
 {
-    // shooting...
+    if (Combat) {
+        const bool isPressed = Value.Get<bool>();
+        Combat->ShootButtonPressed(isPressed);
+    }
 }
 
 void ASparkCharacter::OnEquipPressed(const FInputActionValue& Value)
@@ -271,4 +276,17 @@ bool ASparkCharacter::IsWeaponEquipped() const
 bool ASparkCharacter::IsAiming() const
 {
     return Combat && Combat->bIsAiming;
+}
+
+void ASparkCharacter::PlayFireMontage()
+{
+    if (Combat == nullptr || Combat->EquippedWeapon == nullptr) {
+        return;
+    }
+
+    if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance()) {
+        if (FireWeaponMontage) {
+            AnimInstance->Montage_Play(FireWeaponMontage);
+        }
+    }
 }
